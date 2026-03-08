@@ -19,7 +19,7 @@ class MeView(APIView):
     
     def get(self, request):
         serializer = UserSerializer(request.user)
-        return self.Response(serializer.data)
+        return Response(serializer.data)
     
     
 
