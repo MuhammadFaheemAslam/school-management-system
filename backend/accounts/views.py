@@ -956,7 +956,7 @@ def school_settings(request):
 @permission_classes([IsAuthenticated])
 def update_school_settings(request):
     role = getattr(request.user, 'role', '')
-    if role not in ('super_admin', 'school_admin'):
+    if not request.user.is_superuser and role not in ('super_admin', 'school_admin'):
         return Response({'error': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
 
     obj = SchoolSettings.get()

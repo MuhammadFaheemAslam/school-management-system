@@ -9,10 +9,10 @@ Deploy the School Management System by pushing images to Docker Hub, then runnin
 ```
 Your Machine (Developer)          Client Machine
 ─────────────────────────         ─────────────────────────
-1. Build Docker images            4. Create docker-compose.yml
-2. Push to Docker Hub      ──►    5. Create .env file
-3. Done                           6. docker compose up -d
-                                  7. App is live ✓
+1. Log in to Docker Hub           5. Create docker-compose.yml
+2. Build backend image            6. Create .env file
+3. Build frontend image    ──►    7. docker compose up -d
+4. Verify on Docker Hub           8. App is live ✓
 ```
 
 ---

@@ -43,7 +43,7 @@ A full-stack school management system built with **Django REST Framework** and *
 - ReportLab (PDF generation)
 
 **Frontend**
-- React 18 + Vite
+- React 19 + Vite
 - React Router
 - Recharts (dashboard charts)
 - Nginx (production serving)
@@ -146,7 +146,7 @@ GRANT ALL PRIVILEGES ON DATABASE school_db TO school_user;
 
 ### Step 2 — Configure backend `.env`
 
-Open `backend/.env` and set:
+Open `.env` (project root) and set:
 
 | Field | Value |
 |-------|-------|
