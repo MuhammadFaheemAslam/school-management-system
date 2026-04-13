@@ -936,6 +936,15 @@ def dashboard_stats(request):
 # ── School Settings ──────────────────────────────────────────────────────────
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
+def public_school_info(request):
+    """Public endpoint — returns school name and logo for the login page (no auth required)."""
+    obj = SchoolSettings.get()
+    logo_url = request.build_absolute_uri(obj.logo.url) if obj.logo else None
+    return Response({'name': obj.name, 'logo': logo_url})
+
+
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def school_settings(request):
     obj = SchoolSettings.get()

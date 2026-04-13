@@ -78,6 +78,11 @@ export default function VouchersPage({ embedded = false }) {
 
   const [arrearsModal,  setArrearsModal]  = useState(null);  // { voucher, data }
   const [arrearsLoading, setArrearsLoading] = useState(false);
+  const [schoolName,    setSchoolName]    = useState('');
+
+  useEffect(() => {
+    api.get('/auth/school-settings/').then(r => setSchoolName(r.data.name)).catch(() => {});
+  }, []);
 
   const openArrearsDetail = async (voucher) => {
     setArrearsModal({ voucher, data: null });
@@ -264,7 +269,7 @@ body { font-family:'Segoe UI',Arial,sans-serif; background:#fff; color:#0f172a; 
 </style></head><body>
 <div class="challan">
   <div class="header">
-    <div class="school-name">Azmat Public School</div>
+    <div class="school-name">${schoolName || 'School Management System'}</div>
     <div class="voucher-type">${typeLabel} Fee Voucher</div>
     ${monthLabel ? `<div class="month-badge">${monthLabel}</div>` : ''}
     <div class="voucher-no">Voucher# ${v.voucher_number}</div>

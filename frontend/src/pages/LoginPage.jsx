@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { login as loginService } from '../services/authService';
+import api from '../services/api';
 
 function FieldError({ msg }) {
   return (
@@ -23,6 +24,11 @@ export default function LoginPage() {
   const [showPwd, setShowPwd]   = useState(false);
   const [errors, setErrors]     = useState({});   // { username?, password?, general? }
   const [loading, setLoading]   = useState(false);
+  const [schoolName, setSchoolName] = useState('');
+
+  useEffect(() => {
+    api.get('/auth/public-info/').then(res => setSchoolName(res.data.name)).catch(() => {});
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -65,7 +71,7 @@ export default function LoginPage() {
               <path d="M15 21L18.5 24.5L25 18" stroke="#1e3a5f" strokeWidth="2.5"
                     strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span style={s.logoText}>Azmat Public School</span>
+            <span style={s.logoText}>{schoolName || 'School Management System'}</span>
           </div>
 
           <h1 style={s.headline}>Empowering<br />Education,<br />Simplified.</h1>

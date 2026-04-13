@@ -5,7 +5,7 @@ from .views import (
     LoginView, change_password, create_user, dashboard_stats,
     forgot_password, list_users, me, update_profile, reset_password_via_token,
     admin_reset_password, upload_profile_photo, user_detail,
-    school_settings, update_school_settings,
+    school_settings, update_school_settings, public_school_info,
 )
 
 urlpatterns = [
@@ -22,6 +22,7 @@ urlpatterns = [
     path('forgot-password/',            forgot_password,          name='forgot_password'),
     path('reset-via-token/',            reset_password_via_token, name='reset_via_token'),
     path('admin-reset/<int:user_id>/',  admin_reset_password,     name='admin_reset_password'),
+    path('public-info/',                 public_school_info,       name='public_school_info'),
     path('school-settings/',            school_settings,          name='school_settings'),
     path('school-settings/update/',     update_school_settings,   name='update_school_settings'),
 ]
