@@ -19,64 +19,7 @@ Your Machine (Developer)          Client Machine
 
 ## PART 1 — Developer Machine (Do This Once)
 
-### Step 1 — Update entrypoint.sh to auto-create superuser
-
-The current `entrypoint.sh` does not create a superuser automatically. Update it so the client doesn't need to run any extra commands.
-
-Open `backend/entrypoint.sh` and replace its contents with:
-
-```sh
-#!/bin/sh
-set -e
-
-echo "==> Waiting for database..."
-until python -c "
-import os, django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'school_management.settings')
-django.setup()
-from django.db import connection
-connection.ensure_connection()
-" 2>/dev/null; do
-  echo "    Database not ready — retrying in 2s..."
-  sleep 2
-done
-echo "    Database ready."
-
-echo "==> Running migrations..."
-python manage.py migrate --noinput
-
-echo "==> Collecting static files..."
-python manage.py collectstatic --noinput --clear
-
-echo "==> Creating superuser (if not exists)..."
-python manage.py shell -c "
-from django.contrib.auth import get_user_model
-import os
-User = get_user_model()
-username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'superadmin')
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'Admin@12345')
-email    = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@school.com')
-if not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(username=username, password=password, email=email)
-    print(f'Superuser created: {username}')
-else:
-    print(f'Superuser already exists: {username}')
-"
-
-echo "==> Starting Gunicorn..."
-exec gunicorn school_management.wsgi:application \
-  --bind 0.0.0.0:8000 \
-  --workers 1 \
-  --timeout 120 \
-  --access-logfile - \
-  --error-logfile -
-```
-
-> This script auto-creates the superuser on first startup using the credentials from the `.env` file. If the user already exists, it skips creation silently.
-
----
-
-### Step 2 — Log in to Docker Hub
+### Step 1 — Log in to Docker Hub
 
 ```bash
 docker login
@@ -86,7 +29,7 @@ Enter your Docker Hub username and password when prompted.
 
 ---
 
-### Step 3 — Build and push the backend image
+### Step 2 — Build and push the backend image
 
 Replace `your-dockerhub-username` with your actual Docker Hub username in every command below.
 
@@ -100,7 +43,7 @@ docker push your-dockerhub-username/school-backend:latest
 
 ---
 
-### Step 4 — Build and push the frontend image
+### Step 3 — Build and push the frontend image
 
 The frontend image bakes the API URL at build time. Build it with the correct value:
 
@@ -119,7 +62,7 @@ docker push your-dockerhub-username/school-frontend:latest
 
 ---
 
-### Step 5 — Verify images are on Docker Hub
+### Step 4 — Verify images are on Docker Hub
 
 Go to [https://hub.docker.com](https://hub.docker.com) and confirm both repositories appear:
 - `your-dockerhub-username/school-backend`
@@ -217,6 +160,10 @@ EMAIL_HOST_PASSWORD=your-gmail-app-password
 # ── Frontend build ───────────────────────────────────────
 VITE_API_URL=/api
 
+# ── School Identity ──────────────────────────────────────
+# Used as prefix in admission numbers and employee IDs
+SCHOOL_CODE=SCHOOL
+
 # ── Superuser (auto-created on first startup) ────────────
 DJANGO_SUPERUSER_USERNAME=superadmin
 DJANGO_SUPERUSER_PASSWORD=Admin@12345
@@ -234,6 +181,7 @@ DJANGO_SUPERUSER_EMAIL=admin@school.com
 | `FRONTEND_URL` | Same as above |
 | `EMAIL_HOST_USER` | Gmail address for sending emails |
 | `EMAIL_HOST_PASSWORD` | Gmail App Password (16-char code, not the Gmail login password) |
+| `SCHOOL_CODE` | Short prefix for admission/employee IDs (e.g. `GPS`, `AIMS`) |
 | `DJANGO_SUPERUSER_PASSWORD` | The admin password the client wants to use |
 
 **Fields to leave as-is:**
